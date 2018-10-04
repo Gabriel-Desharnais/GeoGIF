@@ -1,0 +1,5 @@
+<select name="prod" onchange="isItTimeEnabled(this)">
+{% for g in gc %}
+	<option value="{{ g.prodName }}">{{ g.prodName }}</option>
+{% endfor %}
+</select>
