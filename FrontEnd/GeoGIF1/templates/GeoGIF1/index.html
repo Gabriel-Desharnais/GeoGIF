@@ -1,0 +1,1225 @@
+<html>
+	<head>
+		<title>GeoGIF 1</title>
+		<meta charset="UTF-8"> <!-- Encoding of page -->
+		<meta name="author" content="DPS">
+		<meta name="description" content="GeoGIF 1 is a web application that provide a way to create animation of geographic data from WMS sources. The output can be delivered in multiple format :(gif,mp4,ogv)">
+		<html lang="en-CA">
+		
+		{% comment %} allow to get access to static files {% endcomment %}
+		{% load static %}
+    
+		<!-- Begining leaflet prerequisite part -->
+		<!-- To include leaflet -->
+		<link rel="stylesheet"
+		      href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+		      integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+		      crossorigin=""/>
+		      
+		<!-- Make sure you put this AFTER Leaflet's CSS -->
+		<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+		        integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+		        crossorigin=""></script>
+		        
+		<!-- Ending leaflet prerequisite part -->
+		
+		<!-- Begining date picker (Jquery one) prerequisite part -->
+		<!-- include time picker -->
+		<link rel="stylesheet"
+		      href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<!-- Ending date picker (Jquery one) prerequisite part -->
+		
+		<!-- CSS3 part that should someday be migrated to it's own css file -->
+		
+		<style>
+			/* Should comment someday what this section does and how */
+			.arrow-up{
+				width: 0;
+				height: 0;
+				border-left: 40px solid transparent;
+				border-right: 40px solid transparent;
+				border-bottom: 40px solid #ccff99;
+				/*   display:inline-block; */
+				margin-top:2px;
+				margin-left:2px;
+				margin-right:2px;
+				margin-bottom:2px;
+			}
+			
+			.arrow-up:hover{
+				width: 0;
+				height: 0;
+				border-left: 42px solid transparent;
+				border-right: 42px solid transparent;
+				border-bottom: 42px solid #73e600;
+			/*   display:inline-block; */
+				margin-top:2px;
+				margin-left:0px;
+				margin-right:0px;
+				margin-bottom:0px;
+			}
+			
+			.arrow-up:active{
+				width: 0;
+				height: 0;
+				border-left: 40px solid transparent;
+				border-right: 40px solid transparent;
+				border-bottom: 40px solid #59b300;
+				/*   display:inline-block; */
+				margin-top:2px;
+				margin-left:2px;
+				margin-right:2px;
+				margin-bottom:2px;
+			}
+			
+			.arrow-down{
+				width: 0;
+				height: 0;
+				border-left: 40px solid transparent;
+				border-right: 40px solid transparent;
+				border-top: 40px solid #ccff99;
+			/*   display:inline-block; */
+				margin-top:2px;
+				margin-left:2px;
+				margin-right:2px;
+				margin-bottom:0px;
+			}
+			
+			.arrow-down:hover{
+				width: 0;
+				height: 0;
+				border-left: 42px solid transparent;
+				border-right: 42px solid transparent;
+				border-top: 42px solid #73e600;
+			/*   display:inline-block; */
+				margin-top:0px;
+				margin-left:0px;
+				margin-right:0px;
+				margin-bottom:0px;
+			}
+			
+			.arrow-down:active{
+				width: 0;
+				height: 0;
+				border-left: 40px solid transparent;
+				border-right: 40px solid transparent;
+				border-top: 40px solid #59b300;
+			/*   display:inline-block; */
+				margin-top:2px;
+				margin-left:2px;
+				margin-right:2px;
+				margin-bottom:0px;
+			}
+			
+			.time{
+				width:84px;
+				-moz-appearance: textfield;
+			}
+			
+			.spiner{
+				text-align:center;
+				display:inline-block;
+			}
+			
+			.timeSpiner{
+				text-align:center;
+				display:inline-block;
+				border: 2px solid black;
+				border-radius: 5px;
+			}
+			
+			.timeStuff{
+				display:inline-block;
+				border: 2px solid black;
+				border-radius: 5px;
+				padding: 10px 10px 10px 10px;
+			}
+			
+			.boundingboxStuff{
+				display:inline-grid;
+				border: 2px solid black;
+				border-radius: 5px;
+				padding: 10px 10px 10px 10px;
+			}
+			
+			.resolutionStuff{
+				display:inline-block;
+				border: 2px solid black;
+				border-radius: 5px;
+				padding: 10px 10px 10px 10px;
+			}
+			
+			input.listFreeInput::placeholder{
+				text-align:right;
+			}
+		</style>
+		
+		<script>
+		// Scipts related to the jquery date picker this script configures it
+		// Code from «https://jqueryui.com/datepicker/»
+			$( function(){
+			              	var dateFormat = "mm/dd/yy",
+			              	          from = $( "#from" ).datepicker({
+			              	                                 defaultDate: "+1w",
+			              	                                 changeMonth: true,
+			              	                                 changeYear: true,
+			              	                                 showOtherMonths: true,
+			              	                                 altField: "#fromdate",
+			              	                                 altFormat: "yy-mm-dd"
+			              	                            }).on( "change", function() {
+			              	 to.datepicker( "option", "minDate", getDate( this ) );
+			              	                                                      }),
+			              	            to = $( "#to" ).datepicker({
+			              	                                 defaultDate: "+1w",
+			              	                                 changeMonth: true,
+			              	                                 changeYear: true,
+			              	                                 showOtherMonths: true,
+			              	                                 altField: "#todate",
+			              	                                 altFormat: "yy-mm-dd"
+			              	                            }).on( "change", function() {
+			              	 from.datepicker( "option", "maxDate", getDate( this ) );
+			              	                                                      });
+ 
+			function getDate( element ) {
+				var date;
+				try {
+					date = $.datepicker.parseDate( dateFormat, element.value );
+				} catch( error ) {
+					date = null;
+				} 
+				return date;
+			}
+		});
+  </script>
+		
+		
+	</head>
+	
+	<body>
+		<h1> GeoGIF </h1>
+		<h2> Version {{version}} </h2>
+		
+		<!-- Adding twiter login -->
+		<a onclick="login()"><img
+		   src="{% static "sign-in-with-twitter-gray.png" %}"
+		   alt="Sign in"/></a>
+
+		<h3>General information</h3>
+		
+		<form action="getOutput()" method="post" id="annimationForm">
+			
+			{% comment %} this is be able to send a post request with the csrf
+			              midleware it protects againts some atack. See reference:
+			              «https://docs.djangoproject.com/en/1.11/ref/csrf/»
+			{% endcomment %}
+			{% csrf_token %}
+			
+			<input type="text" name="file_name" value="test">Name of file<br>
+			<input type="number" name="fps" value=5>frame per second<br>
+			<input type="checkbox" name="clean_begin_frames" value="True" checked="true">
+			Remove static or empty frames at the beginning of the animation<br>
+			<input type="checkbox" name="clean_end_frames" value="True" checked="true">
+			Remove static or empty frames at the end of the animation<br>
+			<input type="checkbox" name="persist_layers" value="True" checked="true">
+			If a layer is not available for a timestep, use latest timestep<br><br>
+			
+			<h3>Resolution specification</h3>
+			<div class="resolutionStuff">
+				<select name="resolutionType" onchange="updateResolution(this)">
+					<option value="CGA">CGA (320x200)</option>
+					<option value="VGA">VGA (640x480)</option>
+					<option value="sVGA" selected="selected">sVGA (800x600)</option>
+					<option value="HD720">HD 720 (1280x720)</option>
+					<option value="HD1080">HD 1080 (1920x1080)</option>
+					<option value="4k">4K (4096x2160)</option>
+				</select><br>
+				lenght: <input type="number" name="x" id="x" value = 800>px<br>
+				height: <input type="number" name="y" id="y" value = 600>px<br>
+			</div><br><br>
+	
+	
+			<!-- Product table -->
+			<h3>Product to download</h3>
+			<table id="toDow" border="1">
+				<tr>
+					<th>WMS url</th>
+					<th>Product name</th>
+					<th>Time-enabled</th>
+					<th>Time extent</th>
+					<th>Action</th>
+				</tr>
+				<tr id="curProd">
+					<td><input list="source"
+					           id="sourceName"
+					           name="url"
+					           oninput="getCap(this)"
+					           placeholder="&#10225;"
+					           class="listFreeInput">
+					           
+						<datalist id="source">
+							{% for sou in sourceList %}
+								<option value="{{ sou.source }}">{{ sou.name }}</option>
+							{% endfor %}
+						</datalist>
+					</td>
+					<td id="productChoice" ><input type="text" name="prod"></td>
+			
+					<td id="timeEnabled">
+						<input type="checkbox"
+						       name="void1"
+						       id="timeEnabledCheckbox"
+						       checked="true"
+						       value="X">
+					</td>
+					<td id="timeExtent"></td>
+					<td><button type="button" onclick="addtotable()">Add</button></td>
+				</tr>
+			</table>
+			<textarea name="prodList" id="invisible" style="display:none;"></textarea>
+			<br>
+			<br>
+			<br>
+
+			<h3>Time extent of animation</h3>
+			<div class="timeStuff">
+				<!-- this div contains the time extent related stuff -->
+				<!-- This input allow you to use your custom time extent -->
+				<input type="checkbox"
+				       name="custom_time"
+				       value="True"
+				       checked="true"
+				       style="display:none;"> <!-- Use this date interval<br> -->
+
+				<!-- invisible input date to send the form -->
+				<input type="text" name="fromdate" id="fromdate" style="display:none;">
+				<input type="text" name="todate" id="todate" style="display:none;">
+	
+				<!-- This div is the beginning of time extent -->
+				<div id="fromBlock" class="timeSpiner">
+					<label for="from">From :</label>
+					<!-- Display calender -->
+					<div id="from" ></div>
+					<!-- display time selector -->
+					<div class="spiner" id="hour">
+						hour<br>
+						<!-- Spiner for hour -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=Bhour value=00 class="time">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="minute">
+						minute<br>
+						<!-- Spiner for minute -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=Bminute value=00 class="time">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="second">
+						second<br>
+						<!-- Spiner for second -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=Bsecond value=00 class="time">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+			
+				</div>
+		
+				<!--This div is the end of time extent -->
+				<div id="toBlock" class="timeSpiner" >
+					<label for="to">to :</label>
+					<!-- Display calender -->
+					<div id="to"></div>
+					<!-- display time selector -->
+				
+					<div class="spiner" id="hour">
+						hour<br>
+						<!-- Spiner for hour -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=Ehour value=00 class="time">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="minute">
+						minute<br>
+						<!-- Spiner for minute -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=Eminute value=00 class="time">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="second">
+						second<br>
+						<!-- Spiner for second -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=Esecond value=00 class="time">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				</div>
+				<br>
+			
+				<div id="timeStepBlock" class="timeSpiner">
+					<label for="Time step">Time step :</label><br>
+					<!-- display time selector -->
+					<div class="spiner" id="year">
+						year<br>
+						<!-- Spiner for hour -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=TSyear value=00
+						       class="time" onchange="updateTimeStep()">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="month">
+						month<br>
+						<!-- Spiner for minute -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=TSmonth value=00
+						       class="time" onchange="updateTimeStep()">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="day">
+						day<br>
+						<!-- Spiner for second -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=TSday value=00
+						       class="time" onchange="updateTimeStep()">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="hour">
+						hour<br>
+						<!-- Spiner for hour -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=TShour value=00
+						       class="time" onchange="updateTimeStep()">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="minute">
+						minute<br>
+						<!-- Spiner for minute -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=TSminute value=00
+						       class="time" onchange="updateTimeStep()">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+				
+					<div class="spiner" id="second">
+						second<br>
+						<!-- Spiner for second -->
+						<div class="arrow-up" onclick="increment(this);"></div>
+						<input type="number" name=TSsecond value=00
+						       class="time" onchange="updateTimeStep()">
+						<div class="arrow-down" onclick="decrement(this);"></div>
+					</div>
+			
+				</div><br>
+		
+				<input type="text" name="time_step" value="PT3H"
+				       id="time_step" style="display:none;"><br>
+		
+			</div>
+			<br>
+			<br>
+	
+			<h3>Selection of the bounding box</h3>
+	
+			<div class="boundingboxStuff">
+				<!-- First column -->
+				<div style="text-align:center;margin:auto;grid-column:1;">
+					West<br>
+					<input type="number" step="any" name="bboxW" id="bboxW"
+					       value =-180 onchange="updateBoundFromText()" >
+				</div>
+				
+				<!-- second column -->
+				<div style="text-align:center;margin:auto;grid-column:2;">
+					North<br>
+					<input type="number" step="any" name="bboxN" id="bboxN"
+					       value =90  onchange="updateBoundFromText()"><br>
+					<!-- Display map -->
+					<div id="mapid" style="height: 400px; width: 600px;"></div>
+					<input type="number" step="any" name="bboxS" id="bboxS"
+					       value =-90 onchange="updateBoundFromText()"><br>
+					South
+				</div>
+				
+				<!-- tird column -->
+				<div style="text-align:center;margin:auto;grid-column:3;">
+					East<br>
+					<input type="number" step="any" name="bboxE" id="bboxE"
+					       value =180 onchange="updateBoundFromText()" >
+				</div>
+				<br>
+				
+				<input type="text" name="projection" value = "EPSG:4326">projection<br>
+				<select name="BBoxPreselect" onchange="ChangeBBox(this);">
+					<option value="-180,-90,180,90">World</option>
+					<option value="-141,42,-52,84">Canada</option>
+					<option value="-120,49,-110,60">Alberta</option>
+					<option value="-139,48,-114,60">British Columbia</option>
+					<option value="-102,49,-89,60">Manitoba</option>
+					<option value="-69,45,-64,48">New Brunswick</option>
+					<option value="-67.7,47,-52,60">Newfoundland and Labrador</option>
+					<option value="-136.5,60,-101.5,79">Northwest Territories</option>
+					<option value="-66.3,43,-59.9,47">Nova Scotia</option>
+					<option value="-121,52,-61,84">Nunavut</option>
+					<option value="-95,42,-74,57">Ontario</option>
+					<option value="-64.5,45.9,-62,47">Prince Edward Island</option>
+					<option value="-79.5,45,-57,63">Québec</option>
+					<option value="-110,49,-101.5,60">Saskatchewan</option>
+					<option value="-141,60,-123.8,69.6">Yukon</option>
+				</select>
+				<br>
+			</div><br>
+			<br>
+			<button type="button" onclick="getOutput()">Generate animation</button>
+		</form>
+
+
+		<h3>Output</h3>
+		<!-- Select video format of the output -->
+		Type of file to generate :
+		<select name="type" onchange="changeformat()" id="type">
+			<option value="ogv">Vidéo (mp4)</option>
+			<Option value="gif">GIF</option>
+		</select><br>
+		
+		<div id="waiting"></div>
+
+		<div id="GIF_output"></div>
+		
+		<div id="VID_output"></div>
+		
+		<div id="ProductBox" style="display:none;">
+			<input type="text" name="prod">
+		</div>
+		
+		<div id="ActionDIV" style="display:none;">
+			<button type="button" onclick="removeFromTable(this)">Remove</button>
+			<button type="button" onclick="moveDOWN(this)">&#11015;</button>
+			<button type="button" onclick="moveUP(this)">&#11014;</button>
+		</div>
+
+
+		<script>
+			// Stuff related to resolution of the animation
+			function updateResolution(that){
+				// this function will change the resolution in the text box when a
+				// new default is selected
+				switch (that.value)
+				{
+					case "VGA":
+						document.getElementById("x").value=640;
+						document.getElementById("y").value=480;
+						break;
+					case "sVGA":
+						document.getElementById("x").value=800;
+						document.getElementById("y").value=600;
+						break;
+					case "CGA":
+						document.getElementById("x").value=320;
+						document.getElementById("y").value=200;
+						break;
+					case "HD720":
+						document.getElementById("x").value=1280;
+						document.getElementById("y").value=720;
+						break;
+					case "HD1080":
+						document.getElementById("x").value=1920;
+						document.getElementById("y").value=1080;
+						break;
+					case "4k":
+						document.getElementById("x").value=4096;
+						document.getElementById("y").value=2160;
+						break;
+					default:
+					// Don't do anything
+				}
+			}
+		</script>
+
+
+
+
+		<script>
+			// Stuff related to the spiners (all of them)
+			function increment(that){
+				// Function that increment the value in the text box related to the
+				// spiner
+				var par =that.parentNode;
+				var count = par.childNodes[7].value;
+				// If the max value has been reached return the value to -1 and
+				// increment it ==> final value 0
+				if((par.id =="hour" && count >=23) ||
+				   (par.id =="minute" && count >=59) ||
+				   (par.id =="second" && count >=59) ||
+				   (par.id =="day" && count >=31) ||
+				   (par.id =="month" && count >=12)){
+					
+					count = -1;
+				}
+				// Increment the value
+				that.parentNode.childNodes[7].value = parseInt(count) +1.0;
+				updateTimeStep()
+			}
+			
+			function decrement(that){
+			// Function that decrement the value in the text box related to the
+			// spiner
+				var par =that.parentNode;
+				var count = that.parentNode.childNodes[7].value;
+				// If the min value has been reached return the max value and decrement
+				// it. eg. decrementing hour = 0 ==> 23
+				if ((par.id =="hour" && count <=0)){
+					count=24;
+				}else if ((par.id =="minute" && count <=0) ||
+				          (par.id =="second" && count <=0)){
+					count=60;
+				}else if ((par.id =="day" && count <=0)){
+					count=32;
+				}else if ((par.id =="month" && count <=0)){
+					count=13;
+				}else if ((par.id =="year" && count <=0)){
+					count=1;
+				}
+				
+				that.parentNode.childNodes[7].value = parseInt(count) -1.0;
+				updateTimeStep()
+			}
+
+			function updateTimeStep(){
+				// This function take all the values from the spiners and generate a
+				// time string and put it in a hiden input of the form
+				var tsb = document.getElementById("timeStepBlock");
+				var nodes = tsb.childNodes;
+				var timestr = "P";
+				var isitnottime = true;
+				for (var i = 0; i<nodes.length; i++){
+					if (nodes[i].id=="year"){
+						if (parseFloat(nodes[i].childNodes[7].value) !== 0){
+							timestr+=nodes[i].childNodes[7].value+"Y";
+						}
+					}else if (nodes[i].id=="month"){
+						if (parseFloat(nodes[i].childNodes[7].value) !== 0){
+							timestr+=nodes[i].childNodes[7].value+"M";
+						}
+					}else if (nodes[i].id=="day"){
+						if (parseFloat(nodes[i].childNodes[7].value) !== 0){
+							timestr+=nodes[i].childNodes[7].value+"D";
+						}
+					}else if (nodes[i].id=="hour"){
+						if (isitnottime){
+							isitnottime=false;
+							timestr+="T";
+						}
+						if (parseFloat(nodes[i].childNodes[7].value) !== 0){
+							timestr+=nodes[i].childNodes[7].value+"H";
+						}
+					}else if (nodes[i].id=="minute"){
+						if (isitnottime){
+							isitnottime=false;
+							timestr+="T";
+						}
+						if (parseFloat(nodes[i].childNodes[7].value) !== 0){
+							timestr+=nodes[i].childNodes[7].value+"M";
+						}
+					}
+					else if (nodes[i].id=="second"){
+						if (isitnottime){
+							isitnottime=false;
+							timestr+="T";
+						}
+						if (parseFloat(nodes[i].childNodes[7].value) !== 0){
+							timestr+=nodes[i].childNodes[7].value+"D";
+						}
+					}
+				}
+				verifyDate();
+				document.getElementById("time_step").value=timestr;
+			}
+			
+			function fillTimeStep(newVal){
+				// This function insert newVal (an array of number) in the right text
+				// box and then update the hiden form input
+				var tsb = document.getElementById("timeStepBlock");
+				var nodes = tsb.childNodes;
+				
+				for (var i = 0; i<nodes.length; i++){
+					if (nodes[i].id=="year"){
+						nodes[i].childNodes[7].value = newVal[0];
+					}else if (nodes[i].id=="month"){
+						nodes[i].childNodes[7].value = newVal[1];
+					}else if (nodes[i].id=="day"){
+						nodes[i].childNodes[7].value = newVal[2];
+					}else if (nodes[i].id=="hour"){
+						nodes[i].childNodes[7].value = newVal[3];
+					}else if (nodes[i].id=="minute"){
+						nodes[i].childNodes[7].value = newVal[4];
+					}else if (nodes[i].id=="second"){
+						nodes[i].childNodes[7].value = newVal[5];
+					}
+				}
+				updateTimeStep();
+			}
+		</script>
+
+		<script>
+			//leaflet part of the script
+			var map = L.map('mapid', {
+				crs: L.CRS.EPSG4326
+			});
+			
+			var mymap = map.setView([0, 0], 1);
+			rectangle = new L.rectangle([[17.853290, 34.980469],
+			                             [10.876465, 14.853516]],
+			                            {color: 'red',
+			                             fillcolor:'#f03',
+			                             fillOpacity: 0.25});
+			WBrectangle = new L.rectangle([[17.853290, 34.980469],
+			                               [10.876465, 14.853516]],
+			                              {color: 'red',
+			                               fillcolor:'#f03',
+			                               fillOpacity: 0.25});
+			EBrectangle = new L.rectangle([[17.853290, 34.980469],
+			                               [10.876465, 14.853516]],
+			                              {color: 'red',
+			                               fillcolor:'#f03',
+			                               fillOpacity: 0.25});
+			NBrectangle = new L.rectangle([[17.853290, 34.980469],
+			                               [10.876465, 14.853516]],
+			                              {color: 'red',
+			                               fillcolor:'#f03',
+			                               fillOpacity: 0.25});
+			SBrectangle = new L.rectangle([[17.853290, 34.980469],
+			                               [10.876465, 14.853516]],
+			                              {color: 'red',
+			                               fillcolor:'#f03',
+			                               fillOpacity: 0.25});
+			updateBoundFromText();
+			mymap.fitBounds([[-90,-180],[90,180]]);
+			map.addLayer(rectangle);
+			map.addLayer(WBrectangle);
+			map.addLayer(EBrectangle);
+			map.addLayer(NBrectangle);
+			map.addLayer(SBrectangle);
+			
+			WBrectangle.on({mousedown:function(ev){
+				var posinity=ev.latlng.lng;
+				mymap.on('mousemove',function (e) {
+					var y = e.latlng.lng-posinity;
+					document.getElementById("bboxW").value-=-y;
+					posinity=e.latlng.lng;
+					updateBoundFromText();
+				});
+				mymap.dragging.disable();
+			}});
+
+			EBrectangle.on({mousedown:function(ev){
+				var posinity=ev.latlng.lng;
+				mymap.on('mousemove',function (e) {
+					var y = e.latlng.lng-posinity;
+					document.getElementById("bboxE").value-=-y;
+					posinity=e.latlng.lng;
+					updateBoundFromText();
+				});
+				mymap.dragging.disable();
+			}});
+
+			NBrectangle.on({mousedown:function(ev){
+				var posinitx=ev.latlng.lat;
+				mymap.on('mousemove',function (e) {
+					var x = e.latlng.lat-posinitx;
+					document.getElementById("bboxN").value-=-x;
+					posinitx=e.latlng.lat;
+					updateBoundFromText();
+				});
+				mymap.dragging.disable();
+			}});
+
+			SBrectangle.on({mousedown:function(ev){
+				var posinitx=ev.latlng.lat;
+				mymap.on('mousemove',function (e) {
+					var x = e.latlng.lat-posinitx;
+					document.getElementById("bboxS").value-=-x;
+					posinitx=e.latlng.lat;
+					updateBoundFromText();
+				});
+				mymap.dragging.disable();
+			}});
+
+			//ajust center
+			rectangle.on({mousedown:function(ev){
+				var posinity=ev.latlng.lng;
+				var posinitx=ev.latlng.lat;
+				mymap.on('mousemove',function (e) {
+					var y = e.latlng.lng-posinity;
+					var x = e.latlng.lat-posinitx;
+					document.getElementById("bboxE").value-=-y;
+					document.getElementById("bboxW").value-=-y;
+					document.getElementById("bboxN").value-=-x;
+					document.getElementById("bboxS").value-=-x;
+					posinity=e.latlng.lng;
+					posinitx=e.latlng.lat;
+					updateBoundFromText();
+				});
+				mymap.dragging.disable();
+			}});
+			mymap.on('mouseup',function(e){
+				mymap.dragging.enable();
+				mymap.removeEventListener('mousemove');
+			})
+			// WBrectangle.on({mousedown:function(){alert("hoho");}});
+			// var circle = L.Rectangle(L.LatLngBounds(L.LatLng(-10,-10),L.LatLng(10,10)), {color: "#ff7800", weight: 1}).addTo(mymap);
+			/**//*
+			L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+					attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
+					maxZoom: 18,
+					noWrap: true,
+					id: 'mapbox.streets',
+					accessToken: 'pk.eyJ1IjoiZ2FicmllbC1kZXNoYXJuYWlzIiwiYSI6ImNqOGJ4MjZuYjAzYXMyenBtY2phNmVhcW0ifQ.V4lH5qWJWf5k69wliCDRFg'
+			}).addTo(mymap);*/
+			L.tileLayer.wms("http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv",
+			                {layers: 'GEBCO_LATEST'}).addTo(mymap);
+
+			function updateBoundFromText(){
+				// This function will change the displayed bounding box with
+				// information in the text bounding box
+				
+				//limit to one world
+				if (document.getElementById("bboxW").value<-180){
+					document.getElementById("bboxW").value=-180;
+				}
+				if (document.getElementById("bboxS").value<-90){
+					document.getElementById("bboxS").value=-90;
+				}
+				if (document.getElementById("bboxE").value>180){
+					document.getElementById("bboxE").value=180;
+				}
+				if (document.getElementById("bboxN").value>90){
+					document.getElementById("bboxN").value=90;
+				}
+				// Update bounding box
+				var bboxW = document.getElementById("bboxW").value;
+				var bboxS = document.getElementById("bboxS").value;
+				var bboxE = document.getElementById("bboxE").value;
+				var bboxN = document.getElementById("bboxN").value;
+				var dwe =bboxE-bboxW;
+				var dns =bboxN-bboxS;
+				var WB = parseInt(bboxW) +dwe/10;
+				var EB = parseInt(bboxE) -dwe/10;
+				var SB = parseInt(bboxS) +dns/10;
+				var NB = parseInt(bboxN) -dns/10;
+				var WExtS = parseInt(bboxS) + dns/5;
+				var WExtN = parseInt(bboxN) - dns/5;
+	
+				var NExtW = parseInt(bboxW) + dwe/5;
+				var NExtE = parseInt(bboxE) - dwe/5;
+				
+				rectangle.setBounds([[bboxS,bboxW],[bboxN,bboxE]]);
+				WBrectangle.setBounds([[WExtS,bboxW],[WExtN,WB]]);
+				EBrectangle.setBounds([[WExtS,EB],[WExtN,bboxE]]);
+				SBrectangle.setBounds([[bboxS,NExtW],[SB,NExtE]]);
+				NBrectangle.setBounds([[NB,NExtW],[bboxN,NExtE]]);
+			}
+
+			function ChangeBBox(that){
+				// This function is used to change the values in the text input
+				// for the bounding box. It's used by the preset bounding boxes
+				var value = that.value;
+				var valList = value.split(",");
+	
+				document.getElementById("bboxW").value = valList[0];
+				document.getElementById("bboxS").value = valList[1];
+				document.getElementById("bboxE").value = valList[2];
+				document.getElementById("bboxN").value = valList[3];
+				updateBoundFromText();
+
+			}
+		</script>
+
+		<script>
+			// Ajax part
+			var done="no";
+			function getOutput(){
+				// This function request the production of the GIF described in the
+				// form from the GeoGIF1 server
+				var sta = setInterval(function() {status();}, 2500);
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function(){
+					if (this.readyState == 4 && this.status ==200){
+						done ="yes";
+						changeformat();
+						clearInterval(sta);
+					}else if(this.readyState == 4){
+						document.getElementById("GIF_output").innerHTML="erreur";
+						clearInterval(sta);
+					}
+				};
+				xhttp.open("POST",{% url 'GIF'  %},true);
+				// Get data from form
+				var formData = new FormData( document.getElementById("annimationForm"));
+				
+				xhttp.send(formData);
+			
+			}
+	
+			function status(){
+				// This function fetches the status request from the GeoGIF1 server and
+				// insert it in the «waiting» div element
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function(){
+					if (this.readyState == 4 && this.status ==200){
+						var res=this.responseText;
+						if (res!=""){
+							document.getElementById("waiting").innerHTML=res;
+						}
+					}
+				};
+				xhttp.open("GET",{% url 'requestStatus'  %},true);
+				
+				xhttp.send();
+			}
+			
+			function changeformat(){
+				// This function changes the output section
+				if (done=="yes"){
+					if (document.getElementById("type").value=="gif"){
+						document.getElementById("GIF_output").innerHTML='<img src="/THE/">\
+</img>\
+ <a href="/THE/" download="test.gif"><img src="{% static "download.png" %}" alt="Download"/></a>';
+ $("#GIF_output").append('<button type="button" onclick="sendATweet()"><img src="{% static "tweet.png" %}" alt="Tweet"/ height="28"></button>');
+			}
+			if (document.getElementById("type").value=="ogv"){
+				document.getElementById("GIF_output").innerHTML= '<video id="VID_output" width="600" controls >\
+  <source src="/THE_VIDEO/" type="video/ogg">\
+  Your browser does not support HTML5 video.\
+</video>\
+ <a href="/THE_VIDEO/" download="test.ogv"><img src="{% static "download.png" %}" alt="Download"/></a>';
+ $("#GIF_output").append('<button type="button" onclick="sendATweet()"><img src="{% static "tweet.png" %}" alt="Tweet"/ height="28"></button>');
+					}
+				}
+			}
+			
+			// time extent public variable
+			var min = undefined;
+			var max = undefined;
+			var timeStepSecond = undefined;
+			
+			
+			// Form function part
+			function addtotable(){
+				// This function insert a new row in the source table
+				var addrow = document.getElementById("curProd");
+				var index = addrow.rowIndex;
+				var newrow = document.getElementById("toDow").insertRow(index);
+				// Inserting new value in new row
+				newrow.insertCell(0).innerHTML = addrow.cells[0].childNodes[0].value;
+				newrow.insertCell(1).innerHTML = addrow.cells[1].childNodes[0].value;
+				newrow.insertCell(2).innerHTML = document.getElementById("timeEnabledCheckbox").checked;
+				// Adding delete button
+				newrow.insertCell(3).innerHTML = document.getElementById("timeExtent").innerHTML;
+				newrow.insertCell(4).innerHTML = document.getElementById("ActionDIV").innerHTML;
+
+				// Deliting old value
+				addrow.cells[0].childNodes[0].value = "";
+				addrow.cells[1].innerHTML = document.getElementById("ProductBox").innerHTML;
+				document.getElementById("timeExtent").innerHTML ="";
+		
+				document.getElementById("timeEnabledCheckbox").disabled=false;
+		
+				//get max date
+				if(newrow.cells[3].innerHTML != ""){
+					var timeExtent =newrow.cells[3].innerHTML.split("/");
+					var newMaybeMin = new Date(timeExtent[0]);
+					var newMaybeMax = new Date(timeExtent[1]);
+					var newMaybeTimeStep = timeExtent[2];
+					if(min == undefined || newMaybeMin<min ){
+						min = newMaybeMin;
+					}
+					if(max == undefined || newMaybeMax>max ){
+						max = newMaybeMax;
+					}
+					var newMaybeTimeStep = newMaybeTimeStep.split("P")[1];
+					var keepcount = [0,0,0,0,0,0];
+					var acc="";
+					var istimeinparse = false;
+					for (c in newMaybeTimeStep){
+						char = newMaybeTimeStep[c];
+				
+						switch (char)
+						{
+							case "T":
+								istimeinparse = true;
+								acc="";
+								break;
+							case "Y":
+								keepcount[0]+=parseFloat(acc);
+								acc="";
+								break;
+							case "D":
+								keepcount[2]+=parseFloat(acc);
+								acc="";
+								break;
+							case "H":
+								keepcount[3]+=parseFloat(acc);
+								acc="";
+								break;
+							case "M":
+								if(istimeinparse){
+									keepcount[4]+=parseFloat(acc);
+									acc="";
+									break;
+								}else{
+									keepcount[1]+=parseFloat(acc);
+									acc="";
+									break;
+								}
+						
+							case "S":
+								keepcount[5]+=parseFloat(acc);
+								acc="";
+								break;
+							default:
+								acc+=char;
+						}
+					}
+					fillTimeStep(keepcount);
+// 			if(timeStepSecond == undefined || newMaybeTimeStepx<timeStepSecond ){
+// 				timeStepSecond = newMaybeTimeStep;
+// 			}
+
+			// set date range
+					$( "#from" ).datepicker("option","minDate",min);
+					$( "#to" ).datepicker("option","minDate",min);
+					
+					$( "#from" ).datepicker("option","maxDate",max);
+					$( "#to" ).datepicker("option","maxDate",max);
+					
+					
+					$( "#from" ).datepicker( "setDate", min );
+					$( "#to" ).datepicker( "setDate", max );
+				}
+				
+				
+				// Filling out invisible input
+				ImInvisible();
+				
+			}
+			
+			function removeFromTable(x){
+				// This function removes a row in the source table
+				indexRowToDelete = x.parentNode.parentNode.rowIndex;
+				table = document.getElementById("toDow");
+				// Remove row from table
+				table.deleteRow(indexRowToDelete);
+				// Filling out invisible input/:w
+				ImInvisible();
+			}
+			
+			function moveUP(x){
+				// This function changes the order of the layers in the source table
+				indexRowToMove = x.parentNode.parentNode.rowIndex;
+				table = document.getElementById("toDow");
+				//alert(indexRowToMove>1);
+				//alert(table.rows.length);
+				//alert(indexRowToMove+1);
+				if(indexRowToMove>1){
+					
+					var copyTMP = table.rows[indexRowToMove].innerHTML;
+					table.rows[indexRowToMove].innerHTML=table.rows[indexRowToMove-1].innerHTML;
+					table.rows[indexRowToMove-1].innerHTML = copyTMP;
+					// Filling out invisible input/:w
+				}
+				ImInvisible();
+				
+			}
+			
+			function moveDOWN(x){
+				// This function changes the order of the layers in the source table
+				indexRowToMove = x.parentNode.parentNode.rowIndex;
+				table = document.getElementById("toDow");
+				//alert(indexRowToMove>1);
+				//alert(table.rows.length);
+				//alert(indexRowToMove+1);
+				if(table.rows.length>indexRowToMove+2){
+					
+					var copyTMP = table.rows[indexRowToMove].innerHTML;
+					table.rows[indexRowToMove].innerHTML=table.rows[indexRowToMove+1].innerHTML;
+					table.rows[indexRowToMove+1].innerHTML = copyTMP;
+					// Filling out invisible input/:w
+				}
+				ImInvisible();
+			}
+			
+			function ImInvisible(){
+				// This function update the invisible input containg the list of the
+				// source to download
+				table = document.getElementById("toDow");
+				rows = table.rows;
+				// Get the number of row in table
+				numOfRow = rows.length;
+				// Erase the invisible input
+				var invisible = document.getElementById("invisible");
+				invisible.value = "";
+				// Itterate from line 1 to numOfRow-1
+				for (row = 1;row < numOfRow -1; row ++){
+					invisible.value += rows[row].cells[0].innerHTML + "\t" + rows[row].cells[1].innerHTML +"\t" + rows[row].cells[2].innerHTML  + "\n";
+				}
+			}
+			
+	
+			function getCap(that){
+				// Function to get available product from a source
+				var source = that.value;
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function(){
+					if (this.readyState == 4 && this.status ==200){
+							document.getElementById("productChoice").innerHTML=this.responseText;
+					} else if (this.readyState == 4 && this.status ==404){
+						document.getElementById("productChoice").innerHTML=document.getElementById("ProductBox").innerHTML;
+					}
+				};
+				xhttp.open("GET","{% url 'GetCAP'  %}"+"?source="+encodeURIComponent(source),true);
+				// Get data from form
+				xhttp.send();
+			}
+			
+			
+			function isItTimeEnabled(that){
+				// Function to know if a layer is time enambled from GeoGIF1 server
+				var prodname = that.value;
+				var source = document.getElementById("sourceName").value;
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function(){
+					if (this.readyState == 4 && this.status ==200){
+						document.getElementById("timeEnabled").innerHTML=this.responseText;
+						getTimeExtent(that);
+					} else if (this.readyState == 4 && this.status ==404){
+						//document.getElementById("timeEnabled").innerHTML=document.getElementById("timeEnabledCheckboxOG").innerHTML;
+					}
+				
+				};
+				xhttp.open("GET","{% url 'isItTimeEnabled'  %}"+"?source="+encodeURIComponent(source)+"&prodName="+encodeURIComponent(prodname),true);
+				// Get data from form
+				xhttp.send();
+			}
+	
+			function getTimeExtent(that){
+				// This function get time extent of a layer from GeoGIF1 server
+				var prodname = that.value;
+				var source = document.getElementById("sourceName").value;
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function(){
+					if (this.readyState == 4 && this.status ==200){
+						document.getElementById("timeExtent").innerHTML=this.responseText;
+					} else if (this.readyState == 4 && this.status ==404){
+						//document.getElementById("timeEnabled").innerHTML=document.getElementById("timeEnabledCheckboxOG").innerHTML;
+					}
+					
+				};
+				xhttp.open("GET","{% url 'getTimeExtent'  %}"+"?source="+encodeURIComponent(source)+"&prodName="+encodeURIComponent(prodname),true);
+				// Get data from form
+				xhttp.send();
+			}
+			
+		</script>
+
+		<script language="JavaScript">
+			// Closing session on close of tab
+			window.onbeforeunload = confirmExit;
+			function confirmExit(){
+				// This function ask the GeoGIF1 server to close and delete information
+				// about the session
+				var xhttp = new XMLHttpRequest();
+				xhttp.onreadystatechange = function(){
+					if (this.readyState == 4 && this.status ==200){
+					}
+				};
+				xhttp.open("GET",{% url 'END'  %},false);
+				// Get data from form
+				xhttp.send();
+				//return "exit?";
+
+			}
+		
+		</script>
+		
+		<script>
+			//Time extent part
+			function verifyDate(){
+				// This function ensure that the time inveral selected by the user is
+				// not outside the time extent
+				var bhour = document.getElementsByName("Bhour")[0].value;
+				var bmin = document.getElementsByName("Bminute")[0].value;
+				var bsec = document.getElementsByName("Bsecond")[0].value;
+	
+				var ehour = document.getElementsByName("Ehour")[0].value;
+				var emin = document.getElementsByName("Eminute")[0].value;
+				var esec = document.getElementsByName("Esecond")[0].value;
+				var fromdate = new $( "#from" ).datepicker( "getDate" );
+				var todate = new $( "#to" ).datepicker( "getDate" );
+				fromdate.setHours(bhour);
+				fromdate.setMinutes(bmin);
+				fromdate.setSeconds(bsec);
+				
+				todate.setHours(ehour);
+				todate.setMinutes(emin);
+				todate.setSeconds(esec);
+				if(max == undefined){
+				}else if(todate>max ){
+					document.getElementsByName("Ehour")[0].value = max.getHours();
+					document.getElementsByName("Eminute")[0].value = max.getMinutes();
+					document.getElementsByName("Esecond")[0].value = max.getSeconds();
+				}
+				if(min == undefined){
+				}
+				
+				if(min == undefined){
+				}else if(fromdate<min ){
+					document.getElementsByName("Bhour")[0].value = min.getHours();
+					document.getElementsByName("Bminute")[0].value = min.getMinutes();
+					document.getElementsByName("Bsecond")[0].value = min.getSeconds();
+				}
+			}
+		</script>
+		
+		<script>
+			//Add twiter stuff
+			function login(){
+				// This function open a new window to allow the user to connect to
+				// his twitter acount 
+				var myWindow = window.open("{% url 'twitterSignIn' %}?callback={% url 'backFromTwitter' %}", "Twiter sign in", "width=400,height=200");
+			}
+			function sendATweet(){
+				// This function open a new window that allow the user to send a tweet
+				var myWindow = window.open("{% url 'SendTweet' %}", "Send a tweet", "width=400,height=600");
+				
+			}
+		</script>
+		
+		<script>
+			// File size stuff
+			function updateFileSize(){
+				// This function tries to estimate the size of the GIF file
+				// Get number of pixel
+				// Get width
+				var width = document.getElementById("x").value;
+				// Get height
+				var height = document.getElementById("y").value;
+				// Get number of pixel per frame
+				var pxpf = width*height;
+				
+				// display result
+				alert(pxpf);
+			}
+			// Display estimated file size
+			//updateFileSize();
+		</script>
+	</body>
+</html>
