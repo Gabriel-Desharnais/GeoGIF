@@ -1,0 +1,66 @@
+{% load static %}
+
+<h1> GeoGIF </h1>
+<h2> Version {{version}} </h2>
+<h3> Source data base listing</h3>
+
+<!-- Add the table  -->
+<h4>List of the WMS source :</h4>
+<table id="sourcesList" border="1">
+		<tr>
+			<th>Name</th>
+			<th>url of server</th>
+			<th>Last update</th>
+			<th>Action</th>
+		</tr>
+
+{% for sou in sources %}
+	<tr>
+		<th>{{ sou.name }}</th>
+		<th>{{ sou.source }}</th>
+		<th>{{ sou.lastUpdate }}</th>
+		<th><button type="button" onclick="updateThisSource('{{ sou.source }}')">Update</button></th>
+	</tr>
+{% endfor %}
+</table>
+
+<form action="{% url 'AddSource'  %}" method="get">
+  source: <input type="text" name="source">
+  name: <input type="text" name="name">
+  <input type="submit" value="Submit">
+</form>
+<h4>List of layers :</h4>
+
+<table id="layerList" border="1">
+		<tr>
+			<th>Source</th>
+			<th>Name</th>
+			<th>Time-Enabled</th>
+			<th>Time Extent</th>
+			<th>Last update</th>
+			<th>Action</th>
+		</tr>
+
+{% for lay in layers %}
+	<tr>
+		<th>{{ lay.source }}</th>
+		<th>{{ lay.prodName }}</th>
+		<th>{{ lay.timeEnabled}}</th>
+		<th>{{ lay.timeExtent }}</th>
+		<th>{{ lay.lastUpdate }}</th>
+		<th><button type="button" onclick="updateThisLayer('{{ lay.source }}','{{ lay.prodName }}')">Update</button></th>
+	</tr>
+{% endfor %}
+</table>
+
+<script>
+// Script tha let you update databases
+	function updateThisSource(source){
+		document.location.href = "{% url 'updateASource'  %}?"+"source="+encodeURIComponent(source);
+	}
+	
+	function updateThisLayer(source,name){
+		document.location.href = "{% url 'updateALayer'  %}?"+"source="+encodeURIComponent(source)+"&name="+encodeURIComponent(name);
+	}
+
+</script>
