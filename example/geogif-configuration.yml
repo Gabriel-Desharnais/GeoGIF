@@ -1,0 +1,100 @@
+%YAML 1.1
+---
+# GeoGIF configuration version:
+geogif_conf_version: 1.0.0
+
+# All gif_options parameters are optional, default values used if undefined
+gif_options:
+    # Output filename
+    # Default: yaml-configuration_name + .gif
+    name: geogif-output
+    format:
+      - gif
+      - mp4
+    # Framerate in seconds
+    # Default: relatively fast
+    frame_rate: 5 
+
+    # Remove static or empty frames at the beginning of the animation, if any
+    # Default: no
+    clean_begin_frames: yes
+
+    # Remove static or empty frames at the end of the animation, if any
+    # Default: no
+    clean_end_frames: yes
+
+    # If a layer is not available for a specific timestep, use latest timestep for which data is available
+    # This is used when multiple layers are animated in the GIF and some of the layers aren't available for all timesteps
+    # Default: no
+    persist_layers: yes
+
+    # thumbnail giving basic info for the gif
+    # encart ...
+    thumbnail:
+        # lenght of the thumbnail ( since its on the bottom, it his height
+        # thumbnail height / width
+        length: 65
+        # background color
+        color: 230 230 230
+        # sources
+        sources:
+          - Environment and Climate Change Canada
+          - OpenStreetMap
+        # add information about layers
+        has_layers: yes
+        # add information about time
+        has_time: yes
+
+# Query options are optional, default values used if undefined
+# Values for the WMS queries
+query_options:
+    # default 800 600
+    # Size for the map area of the output gif
+    # Total output gif size is map_size + thumbnail.lenght
+    map_size: 800 535
+    # Default: -180 -90 180 90
+    bbox: -180 -90 180 90
+    # Default: EPSG:4326
+    projection: EPSG:4326
+    # Default: combined time interval for all layers, as defined in the WMS GetCapabilities
+    # In this sample, the values are commented in order for these queries to succeed
+    time:
+        # begin of the interval (iso format)
+        time_begin: 2017-11-08T00:00:00Z
+        # end of the interval (iso format)
+        time_end: 2017-11-18T00:00:00Z
+        # step of the interval (iso format)
+        time_step: PT3H
+
+# layer declaration
+# Mandatory
+layers:
+    # These layer and basemap names can be anything
+    basemap:
+        # Layer ordering priority. 1 is background and higher values are placed on top
+        order: 1
+
+        # timeEnabled is the flag that identifies static basemap layers, only a single query is sent if set to 'no'
+        timeEnabled: no
+
+        # WMS server URL
+        server_url: http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv
+
+        # WMS layer available on the WMS server
+        layer_name: GEBCO_LATEST
+
+    layer_02:
+        # order of the layer
+        order: 2
+        # timeEnabled is the flag that identifies static basemap layers, only a single query is sent if set to 'no'
+        timeEnabled: yes
+        # url
+        server_url: http://geo.weather.gc.ca/geomet-beta
+        # name
+        layer_name: GDPS.ETA_NT
+        # OCEAN.GIOPS.2D_TM2
+        # HRDPS.CONTINENTAL_HU
+        # GDPS.ETA_NT
+        # _PR
+        # take default style if not specified
+        # style : SOMETHING
