@@ -5,7 +5,7 @@ source python3-env/bin/activate
 
 # Start the test server
 cd FrontEnd
-python3 manage.py runserver 127.0.0.1
+python3 manage.py runserver 127.0.0.1:4242
 
 # Leave the virtual env
 deactivate
