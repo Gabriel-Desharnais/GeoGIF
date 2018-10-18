@@ -26,7 +26,7 @@ cd GeoGIF
 To start GeoGIF front-end run:
 
 ```
-. GGcontroller/startTestServer.sh
+. GGcontroller/startTestServer.sh HOST:PORT
 ```
 
 Access the URL path with a web browser.
