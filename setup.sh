@@ -34,6 +34,9 @@
 # install ffmpeg
 python3 -c "import imageio; imageio.plugins.ffmpeg.download()"
 
+MY_PATH="`dirname \"$0\"`"
+cd "`( cd \"$MY_PATH\" && pwd )`"
+
 GGcontroller/updateStatic.sh
 GGcontroller/updateDB.sh
 # deactivate
