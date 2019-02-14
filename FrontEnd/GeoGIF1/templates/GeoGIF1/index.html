@@ -232,7 +232,8 @@
   <div class="stepBar">Resolution and format</div>
   <div class="stepBar">Product download</div>
   <div class="stepBar">Time extent</div>
-  <div class="stepBar">Geo extent</div>
+  <div class="stepBar" id="GeoExtent">Geo extent</div>
+
   <div class="stepBar">Export</div>
   <form action="getOutput()" method="post" id="annimationForm">
   <div class="content" name="General info" style="display:block;">
@@ -693,13 +694,19 @@
 			}
 		</script>
 
-		<script>
+				<script>
 			//leaflet part of the script
-			var map = L.map('mapid', {
+			//Execute this only when geoextent is selected for the first time
+			$("#GeoExtent").one( "click", function() {
+			//hide every content stuff
+			$(".content").css("display","none");
+			//display only content name=Geo extent
+			$("[name='Geo extent']").css("display","block");
+			window.map = L.map('mapid', {
 				crs: L.CRS.EPSG4326
 			});
+			window.mymap = map.setView([0, 0], 1);
 			
-			var mymap = map.setView([0, 0], 1);
 			rectangle = new L.rectangle([[17.853290, 34.980469],
 			                             [10.876465, 14.853516]],
 			                            {color: 'red',
@@ -862,9 +869,15 @@
 				document.getElementById("bboxS").value = valList[1];
 				document.getElementById("bboxE").value = valList[2];
 				document.getElementById("bboxN").value = valList[3];
-				updateBoundFromText();
+				updateBoundFromText();                                                     
 
 			}
+			
+});
+			
+			
+			
+			
 		</script>
 
 		<script>

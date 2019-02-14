@@ -132,7 +132,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS=[os.path.join(BASE_DIR, "static"),] # Will fetch static file in /FrontEnd/Static/
+STATICFILES_DIRS=[os.path.join(BASE_DIR, "GeoGIF1/static"),] # Will fetch static file in /FrontEnd/Static/
 STATIC_ROOT = "FrontEnd/static/"
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
