@@ -77,7 +77,7 @@ WSGI_APPLICATION = 'FrontEnd.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR,'../../data/db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR,'db.sqlite3'),
     }
 }
 
@@ -120,7 +120,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS=[os.path.join(BASE_DIR, "static"),] # Will fetch static file in /FrontEnd/Static/
+STATICFILES_DIRS=[os.path.join(BASE_DIR, "GeoGIF1/static"),] # Will fetch static file in /FrontEnd/Static/
 STATIC_ROOT = "FrontEnd/static/"
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
