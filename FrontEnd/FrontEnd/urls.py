@@ -32,6 +32,7 @@ urlpatterns = [
     url(r'AddSource/$',views.AddSource,name='AddSource'),			# Add a source to DB
     url(r'updateALayer/$',views.updateALayer,name='updateALayer'),		# Update a layer
     url(r'updateCap/$',views.updateCap),					# I don't know
+    url(r'log/$',views.log, name='log'),                                                    # See the logs
     # Get access to the result content
     url(r'THE/$',views.THE,name='THE'),						# Show the GIF
     url(r'THE_VIDEO/$',views.THE_VIDEO,name='THE_VIDEO/'),			# Show the video

@@ -154,6 +154,32 @@
 			input.listFreeInput::placeholder{
 				text-align:right;
 			}
+			/*This style on the setting and preview pane*/
+		.section{
+				border: 2px solid black;
+				border-radius: 5px;
+				padding: 0px 0px 0px 0px;
+				height:110%;
+				display:inline-block;
+				overflow:hidden;
+				}
+		/*This style section bar of the setting pane*/
+		.stepBar{
+				display: inline-block;
+				float:left;
+				background-color: #99c2ff;
+				width:14%;
+				height:10%;
+				text-align: center;
+		}
+		.stepBar:hover{
+		background-color:#66a3ff;
+		}
+		/*This style of part of form of setting pane*/
+		.content{
+			display:none;
+		
+		}
 		</style>
 		
 		<script>
@@ -198,25 +224,25 @@
 	</head>
 	
 	<body>
-		<h1> GeoGIF </h1>
-		<h2> Version {{version}} </h2>
+		<!--<h1> GeoGIF </h1>
+		<h2> Version {{version}} </h2>-->
 		
-		<!-- Adding twiter login -->
-		<a onclick="login()"><img
-		   src="{% static "sign-in-with-twitter-gray.png" %}"
-		   alt="Sign in"/></a>
-
-		<h3>General information</h3>
-		
-		<form action="getOutput()" method="post" id="annimationForm">
-			
-			{% comment %} this is be able to send a post request with the csrf
+  <div style="width:56%;" class="section">
+  <div style="width:30%; background-color: #0066ff;" class="stepBar">General info</div>
+  <div class="stepBar">Resolution and format</div>
+  <div class="stepBar">Product download</div>
+  <div class="stepBar">Time extent</div>
+  <div class="stepBar">Geo extent</div>
+  <div class="stepBar">Export</div>
+  <form action="getOutput()" method="post" id="annimationForm">
+  <div class="content" name="General info" style="display:block;">
+		{% comment %} this is be able to send a post request with the csrf
 			              midleware it protects againts some atack. See reference:
 			              «https://docs.djangoproject.com/en/1.11/ref/csrf/»
 			{% endcomment %}
 			{% csrf_token %}
 			
-			<input type="text" name="file_name" value="test">Name of file<br>
+			In this section bladibladibla<br>
 			<input type="number" name="fps" value=5>frame per second<br>
 			<input type="checkbox" name="clean_begin_frames" value="True" checked="true">
 			Remove static or empty frames at the beginning of the animation<br>
@@ -224,9 +250,10 @@
 			Remove static or empty frames at the end of the animation<br>
 			<input type="checkbox" name="persist_layers" value="True" checked="true">
 			If a layer is not available for a timestep, use latest timestep<br><br>
-			
-			<h3>Resolution specification</h3>
-			<div class="resolutionStuff">
+  </div>
+  <div class="content" name="Resolution and format">
+  <div class="resolutionStuff">
+				Select the resolution of the picture.<br>
 				<select name="resolutionType" onchange="updateResolution(this)">
 					<option value="CGA">CGA (320x200)</option>
 					<option value="VGA">VGA (640x480)</option>
@@ -238,16 +265,24 @@
 				lenght: <input type="number" name="x" id="x" value = 800>px<br>
 				height: <input type="number" name="y" id="y" value = 600>px<br>
 			</div><br><br>
-	
-	
-			<!-- Product table -->
-			<h3>Product to download</h3>
-			<table id="toDow" border="1">
+  <div class="resolutionStuff">
+		Select the format to export the video<br>
+		<select name="formatType">
+					<option value="MP4">MP4</option>
+					<option value="GIF" selected="selected">GIF</option>
+					<option value="OGV" >OGV</option>
+		</select><br>
+  </div>
+  </div>
+  
+  <div class="content" name="Product download">
+  <!-- Product table -->
+  <table id="toDow" border="1">
 				<tr>
 					<th>WMS url</th>
 					<th>Product name</th>
-					<th>Time-enabled</th>
-					<th>Time extent</th>
+					<th style="display:none;">te</th>
+					<th style="display:none;">time extent</th>
 					<th>Action</th>
 				</tr>
 				<tr id="curProd">
@@ -266,24 +301,21 @@
 					</td>
 					<td id="productChoice" ><input type="text" name="prod"></td>
 			
-					<td id="timeEnabled">
+					<td id="timeEnabled" style="display:none">
 						<input type="checkbox"
 						       name="void1"
 						       id="timeEnabledCheckbox"
 						       checked="true"
 						       value="X">
 					</td>
-					<td id="timeExtent"></td>
+					<td id="timeExtent" style="display:none"></td>
 					<td><button type="button" onclick="addtotable()">Add</button></td>
 				</tr>
 			</table>
 			<textarea name="prodList" id="invisible" style="display:none;"></textarea>
-			<br>
-			<br>
-			<br>
-
-			<h3>Time extent of animation</h3>
-			<div class="timeStuff">
+  </div>
+  <div class="content" name="Time extent">
+  <div class="timeStuff">
 				<!-- this div contains the time extent related stuff -->
 				<!-- This input allow you to use your custom time extent -->
 				<input type="checkbox"
@@ -424,38 +456,17 @@
 				       id="time_step" style="display:none;"><br>
 		
 			</div>
-			<br>
-			<br>
-	
-			<h3>Selection of the bounding box</h3>
-	
-			<div class="boundingboxStuff">
-				<!-- First column -->
-				<div style="text-align:center;margin:auto;grid-column:1;">
-					West<br>
-					<input type="number" step="any" name="bboxW" id="bboxW"
-					       value =-180 onchange="updateBoundFromText()" >
-				</div>
+  </div>
+  <div class="content" name="Geo extent">
+  <div>
+				<!-- Map -->
+				<div id="mapid" style="height: 400px; width: 600px; margin:75px 0px 0px 15px;"></div>
 				
-				<!-- second column -->
-				<div style="text-align:center;margin:auto;grid-column:2;">
-					North<br>
-					<input type="number" step="any" name="bboxN" id="bboxN"
-					       value =90  onchange="updateBoundFromText()"><br>
-					<!-- Display map -->
-					<div id="mapid" style="height: 400px; width: 600px;"></div>
-					<input type="number" step="any" name="bboxS" id="bboxS"
-					       value =-90 onchange="updateBoundFromText()"><br>
-					South
-				</div>
+				<div style="display:inline-block"> North </div> <input type="number" step="any" name="bboxN" id="bboxN" value =90  onchange="updateBoundFromText()" style="display:inline-block"><br>
+				<div style="display:inline-block"> South </div> <input type="number" step="any" name="bboxS" id="bboxS" value =-90 onchange="updateBoundFromText()" style="display:inline-block"><br>
+				<div style="display:inline-block"> East </div> <input type="number" step="any" name="bboxE" id="bboxE" value =180 onchange="updateBoundFromText()" style="display:inline-block"><br>
+				<div style="display:inline-block"> West </div> <input type="number" step="any" name="bboxW" id="bboxW" value =-180 onchange="updateBoundFromText()" style="display:inline-block"><br>
 				
-				<!-- tird column -->
-				<div style="text-align:center;margin:auto;grid-column:3;">
-					East<br>
-					<input type="number" step="any" name="bboxE" id="bboxE"
-					       value =180 onchange="updateBoundFromText()" >
-				</div>
-				<br>
 				
 				<input type="text" name="projection" value = "EPSG:4326">projection<br>
 				<select name="BBoxPreselect" onchange="ChangeBBox(this);">
@@ -476,13 +487,23 @@
 					<option value="-141,60,-123.8,69.6">Yukon</option>
 				</select>
 				<br>
-			</div><br>
-			<br>
-			<button type="button" onclick="getOutput()">Generate animation</button>
-		</form>
-
-
-		<h3>Output</h3>
+			</div>
+  </div>
+  <div class="content" name="Export">
+  <button type="button" onclick="getOutput()">Generate animation</button>
+  <input type="text" name="file_name" value="test">Name of file<br>
+  <!-- Adding twiter login -->
+		<a onclick="login()"><img
+		   src="{% static "sign-in-with-twitter-gray.png" %}"
+		   alt="Sign in"/></a>
+  </div>
+  </form>
+  </div>
+		
+			
+		
+		<div style="width:40%;" class="section">
+  <h3>Output</h3>
 		<!-- Select video format of the output -->
 		Type of file to generate :
 		<select name="type" onchange="changeformat()" id="type">
@@ -490,11 +511,14 @@
 			<Option value="gif">GIF</option>
 		</select><br>
 		
-		<div id="waiting"></div>
+		<div id="status"></div>
 
 		<div id="GIF_output"></div>
 		
 		<div id="VID_output"></div>
+  </div>
+
+		
 		
 		<div id="ProductBox" style="display:none;">
 			<input type="text" name="prod">
@@ -849,16 +873,13 @@
 			function getOutput(){
 				// This function request the production of the GIF described in the
 				// form from the GeoGIF1 server
-				var sta = setInterval(function() {status();}, 2500);
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function(){
 					if (this.readyState == 4 && this.status ==200){
 						done ="yes";
 						changeformat();
-						clearInterval(sta);
 					}else if(this.readyState == 4){
 						document.getElementById("GIF_output").innerHTML="erreur";
-						clearInterval(sta);
 					}
 				};
 				xhttp.open("POST",{% url 'GIF'  %},true);
@@ -869,22 +890,6 @@
 			
 			}
 	
-			function status(){
-				// This function fetches the status request from the GeoGIF1 server and
-				// insert it in the «waiting» div element
-				var xhttp = new XMLHttpRequest();
-				xhttp.onreadystatechange = function(){
-					if (this.readyState == 4 && this.status ==200){
-						var res=this.responseText;
-						if (res!=""){
-							document.getElementById("waiting").innerHTML=res;
-						}
-					}
-				};
-				xhttp.open("GET",{% url 'requestStatus'  %},true);
-				
-				xhttp.send();
-			}
 			
 			function changeformat(){
 				// This function changes the output section
@@ -922,8 +927,10 @@
 				newrow.insertCell(0).innerHTML = addrow.cells[0].childNodes[0].value;
 				newrow.insertCell(1).innerHTML = addrow.cells[1].childNodes[0].value;
 				newrow.insertCell(2).innerHTML = document.getElementById("timeEnabledCheckbox").checked;
+				newrow.cells[2].setAttribute("style","display:none")
 				// Adding delete button
 				newrow.insertCell(3).innerHTML = document.getElementById("timeExtent").innerHTML;
+				newrow.cells[3].setAttribute("style","display:none")
 				newrow.insertCell(4).innerHTML = document.getElementById("ActionDIV").innerHTML;
 
 				// Deliting old value
@@ -1221,5 +1228,26 @@
 			// Display estimated file size
 			//updateFileSize();
 		</script>
+		
+		<script>
+			//This script will crate a webSocket to exchange request status
+			var status_socket = new WebSocket('ws://' + window.location.host + "/status");
+			//create callback action
+			status_socket.onmessage = function(response){
+				var data = JSON.parse(response.data);
+				$('#status').text(data.status);
+			};
+</script>
+	<script>
+		//Do this when a step is clicked
+		$(".stepBar").click(function(){
+			$(".stepBar").css("backgroundColor","#99c2ff");
+			$(".stepBar").css("width","14%");
+			$(".content").css("display","none");
+			$(this).css("backgroundColor","#0066ff");
+			$(this).css("width","30%");
+			$("[name='" + $(this).text() +"']").css("display","block");
+		});
+	</script>
 	</body>
 </html>
