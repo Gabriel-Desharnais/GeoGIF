@@ -17,13 +17,15 @@ from base64 import b64encode,b64decode
 import django.db.utils
 from .models import Source
 from .models import GetCapapilities
+from .models import errorLog
 from django.utils import timezone
 
 import oauth2 as oauth
 import json
 from urllib.parse import urlencode,parse_qsl
 from TwitterAPI import TwitterAPI
-
+from asgiref.sync import async_to_sync
+import channels.layers
 
 # Twitter API access informations
 CONSUMER_KEY = "IkxwKv3IJGoOTt8vHku7gIjDJ"
@@ -164,6 +166,16 @@ def home(request):
             'version':version
         }
     return HttpResponse(template.render(context, request))
+
+def log(request):
+    # This will show the last 24 hours logs from the database
+    template = loader.get_template('GeoGIF1/log.html')
+    context = {
+              'version':version,
+              'log': errorLog.objects.all()
+             }
+    return HttpResponse(template.render(context, request))
+
 def SourceDB(request):
     # This will show every information stored in source and layer
     # Database
@@ -321,6 +333,7 @@ def getTimeExtent(request):
 def requestStatus(request):
     # This trys to return the current status of a request. It is poorly
     # made and should be made properly but yeah it kinda work (or not)
+    #this should be deleted
     
     try:
         try:
@@ -358,9 +371,7 @@ def THE_VIDEO(request):
 def gif(request):
     # This will generate the GIF and video files if works and calls the 
     # backend proberly
-    
-    request.session["status"]="Configuring parameters"
-    request.session.save()
+    updateStatus(request, 'Configuring parameters')
     cwd = os.getcwd()
     tempdir = tempfile.TemporaryDirectory()
     # Create a params dictionnary to transfert to "execute"
@@ -416,12 +427,10 @@ def gif(request):
     if params['file_name']=="":
         return HttpResponse("erreur")
     # Launch execute
-    request.session["status"]="Lauch of the video editor"
-    request.session.save()
+    updateStatus(request, 'Lauch of the video editor')
     GeoGIF.generateAnimation(params,tempdir.name)
     for format in params['list_of_format']:
-        request.session["status"]="Saving video format %s"%(format,)
-        request.session.save()
+        updateStatus(request, 'Saving video format %s'%(format,))
         file = open("%s/%s"%(tempdir.name,params["file_name"]+"."+format),"rb")
         fil = file.read()
     
@@ -433,11 +442,13 @@ def gif(request):
             #return HttpResponse(fil,content_type="video/mp4")
         file.close()
     request.session.set_expiry(86400)
-    request.session["status"]="Job done"
-    request.session.save()
+    updateStatus(request, 'Job done')
     return HttpResponse("animation done")
     
 def index(request):
+    # Set up session
+    request.session["status"] = "welcome"
+    request.session.save()
     # This should be deleted because it is crap
     latest_question_list = ['test','test2']
     template = loader.get_template('GeoGIF1/index.html')
@@ -460,3 +471,7 @@ def results(request, question_id):
 def vote(request, question_id):
   # This should be deleted
     return HttpResponse("You're voting on question %s." % question_id)
+
+def updateStatus(request, status):
+    # This function acts as a messager interface between the server and the client
+    async_to_sync(channels.layers.get_channel_layer().send)(request.session["channel_name"], {'type': 'status','status':status})

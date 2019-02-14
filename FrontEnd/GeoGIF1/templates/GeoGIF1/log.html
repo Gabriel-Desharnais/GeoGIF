@@ -1,0 +1,26 @@
+{% load static %}
+<style>
+table, th, td {
+  border: 1px solid black;
+}
+</style>
+
+<h1> GeoGIF </h1>
+<h2> Version {{version}} </h2>
+
+<h3>Here is the logs of the requests</h3>
+<table>
+	<tr>
+		<th>time</th>
+		<th>request</th>
+		<th>erreur</th>
+	</tr>
+{% for ent in log %}
+	<tr>
+		<th>{{ ent.time }}</th>
+		<th>{{ ent.request }}</th>
+		<th>{{ ent.error }}</th>
+	</tr>
+{% endfor %}
+</table>
+<h3>Here is the logs of gif generation request and results</h3>
