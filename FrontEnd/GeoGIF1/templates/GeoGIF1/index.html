@@ -130,13 +130,6 @@
 				border-radius: 5px;
 			}
 			
-			.timeStuff{
-				display:inline-block;
-				border: 2px solid black;
-				border-radius: 5px;
-				padding: 10px 10px 10px 10px;
-			}
-			
 			.boundingboxStuff{
 				display:inline-grid;
 				border: 2px solid black;
@@ -168,7 +161,7 @@
 				display: inline-block;
 				float:left;
 				background-color: #99c2ff;
-				width:14%;
+				width:12%;
 				height:10%;
 				text-align: center;
 		}
@@ -228,10 +221,11 @@
 		<h2> Version {{version}} </h2>-->
 		
   <div style="width:56%;" class="section">
-  <div style="width:30%; background-color: #0066ff;" class="stepBar">General info</div>
+  <div style="width:28%; background-color: #0066ff;" class="stepBar">General info</div>
   <div class="stepBar">Resolution and format</div>
   <div class="stepBar">Product download</div>
   <div class="stepBar">Time extent</div>
+  <div class="stepBar">Time step</div>
   <div class="stepBar" id="GeoExtent">Geo extent</div>
 
   <div class="stepBar">Export</div>
@@ -316,7 +310,6 @@
 			<textarea name="prodList" id="invisible" style="display:none;"></textarea>
   </div>
   <div class="content" name="Time extent">
-  <div class="timeStuff">
 				<!-- this div contains the time extent related stuff -->
 				<!-- This input allow you to use your custom time extent -->
 				<input type="checkbox"
@@ -391,10 +384,16 @@
 						<input type="number" name=Esecond value=00 class="time">
 						<div class="arrow-down" onclick="decrement(this);"></div>
 					</div>
-				</div>
-				<br>
+				
 			
-				<div id="timeStepBlock" class="timeSpiner">
+				
+		
+				
+		
+			</div>
+  </div>
+  <div class="content" name="Time step">
+  <div id="timeStepBlock" class="timeSpiner">
 					<label for="Time step">Time step :</label><br>
 					<!-- display time selector -->
 					<div class="spiner" id="year">
@@ -452,11 +451,9 @@
 					</div>
 			
 				</div><br>
-		
 				<input type="text" name="time_step" value="PT3H"
 				       id="time_step" style="display:none;"><br>
-		
-			</div>
+  
   </div>
   <div class="content" name="Geo extent">
   <div>
@@ -1255,10 +1252,10 @@
 		//Do this when a step is clicked
 		$(".stepBar").click(function(){
 			$(".stepBar").css("backgroundColor","#99c2ff");
-			$(".stepBar").css("width","14%");
+			$(".stepBar").css("width","12%");
 			$(".content").css("display","none");
 			$(this).css("backgroundColor","#0066ff");
-			$(this).css("width","30%");
+			$(this).css("width","28%");
 			$("[name='" + $(this).text() +"']").css("display","block");
 		});
 	</script>
