@@ -106,4 +106,4 @@ venv.bak/
 #django Shit
 FrontEnd/GeoGIF1/migrations/
 FrontEnd/static/admin/
-
+FrontEnd/FrontEnd/static/
