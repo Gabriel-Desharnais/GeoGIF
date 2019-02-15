@@ -355,28 +355,31 @@ def THE(request):
     
     #print("voila")
     #return HttpResponse("vvd")
+    #Get format
+    typ = request.session["user_format"]
+    if typ == "gif":
+        typ = "image/gif"
+    elif typ == "mp4":
+        typ = "video/mp4"
+    elif typ == "ogv":
+        typ = "video/ogg"
+        
     try:
-        return HttpResponse(b64decode(request.session["GIF"].encode("ascii")),content_type="image/gif")
+        return HttpResponse(b64decode(request.session["result"].encode("ascii")),content_type=typ)
     except KeyError:
         return HttpResponseNotFound('<h1>Page not found</h1>')
-        
-def THE_VIDEO(request):
-    # This will return the video file (name is not pure crap)
-    
-    try:
-        return HttpResponse(b64decode(request.session["OGV"].encode("ascii")),content_type="video/ogg")
-    except KeyError:
-        return HttpResponseNotFound('<h1>Page not found</h1>')
-        
+                
 def gif(request):
     # This will generate the GIF and video files if works and calls the 
     # backend proberly
+    # Send status to client
     updateStatus(request, 'Configuring parameters')
-    cwd = os.getcwd()
+    cwd = os.getcwd()   #Useless to delete sometimes
+    # Create a tempdir to store intermediate pictures and stuff
     tempdir = tempfile.TemporaryDirectory()
     # Create a params dictionnary to transfert to "execute"
     params = {}
-    params['list_of_format']=['ogv','gif']
+    params['list_of_format']=[request.POST.get("formatType","gif"),]
     #params['file_type'] = "gif"
     params['file_name'] = request.POST.get("file_name","")
     params['frame_rate'] = int(request.POST.get("fps",1))
@@ -427,19 +430,15 @@ def gif(request):
     if params['file_name']=="":
         return HttpResponse("erreur")
     # Launch execute
-    updateStatus(request, 'Lauch of the video editor')
+    updateStatus(request, 'Lauch of the video editor') # Should change that to begining download
     GeoGIF.generateAnimation(params,tempdir.name)
     for format in params['list_of_format']:
-        updateStatus(request, 'Saving video format %s'%(format,))
+        updateStatus(request, 'Saving video format %s in db'%(format,))
         file = open("%s/%s"%(tempdir.name,params["file_name"]+"."+format),"rb")
         fil = file.read()
-    
-        if format == "gif":
-            request.session["GIF"] = b64encode(fil).decode("ascii")
-            #return HttpResponse(fil,content_type="image/gif")
-        elif format == "ogv":
-            request.session["OGV"] = b64encode(fil).decode("ascii")
-            #return HttpResponse(fil,content_type="video/mp4")
+        # Save file in user session
+        request.session["result"] = b64encode(fil).decode("ascii")
+        request.session["user_format"] = format
         file.close()
     request.session.set_expiry(86400)
     updateStatus(request, 'Job done')

@@ -262,10 +262,10 @@
 			</div><br><br>
   <div class="resolutionStuff">
 		Select the format to export the video<br>
-		<select name="formatType">
-					<option value="MP4">MP4</option>
-					<option value="GIF" selected="selected">GIF</option>
-					<option value="OGV" >OGV</option>
+		<select id="formatType" name="formatType">
+					<option value="mp4">MP4</option>
+					<option value="gif" selected="selected">GIF</option>
+					<option value="ogv" >OGV</option>
 		</select><br>
   </div>
   </div>
@@ -519,18 +519,10 @@
 		
 		<div style="width:40%;" class="section">
   <h3>Output</h3>
-		<!-- Select video format of the output -->
-		Type of file to generate :
-		<select name="type" onchange="changeformat()" id="type">
-			<option value="ogv">Vidéo (mp4)</option>
-			<Option value="gif">GIF</option>
-		</select><br>
 		
 		<div id="status"></div>
-
 		<div id="GIF_output"></div>
 		
-		<div id="VID_output"></div>
   </div>
 
 		
@@ -896,16 +888,16 @@
 
 		<script>
 			// Ajax part
-			var done="no";
 			function getOutput(){
 				// This function request the production of the GIF described in the
 				// form from the GeoGIF1 server
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function(){
 					if (this.readyState == 4 && this.status ==200){
-						done ="yes";
-						changeformat();
+						// Add result to output
+						addResultOutput();
 					}else if(this.readyState == 4){
+						//Should be made irelavent at some point with messaging queue
 						document.getElementById("GIF_output").innerHTML="erreur";
 					}
 				};
@@ -918,24 +910,29 @@
 			}
 	
 			
-			function changeformat(){
-				// This function changes the output section
-				if (done=="yes"){
-					if (document.getElementById("type").value=="gif"){
-						document.getElementById("GIF_output").innerHTML='<img src="/THE/">\
-</img>\
- <a href="/THE/" download="test.gif"><img src="{% static "download.png" %}" alt="Download"/></a>';
- $("#GIF_output").append('<button type="button" onclick="sendATweet()"><img src="{% static "tweet.png" %}" alt="Tweet"/ height="28"></button>');
-			}
-			if (document.getElementById("type").value=="ogv"){
-				document.getElementById("GIF_output").innerHTML= '<video id="VID_output" width="600" controls >\
-  <source src="/THE_VIDEO/" type="video/ogg">\
-  Your browser does not support HTML5 video.\
-</video>\
- <a href="/THE_VIDEO/" download="test.ogv"><img src="{% static "download.png" %}" alt="Download"/></a>';
- $("#GIF_output").append('<button type="button" onclick="sendATweet()"><img src="{% static "tweet.png" %}" alt="Tweet"/ height="28"></button>');
-					}
+			function addResultOutput(){
+				// This function add data in the output section
+				if (document.getElementById("formatType").value=="gif"){
+					document.getElementById("GIF_output").innerHTML='<img src="/THE/">\
+					</img>\
+					<a href="/THE/" download="test.gif"><img src="{% static "download.png" %}" alt="Download"/></a>';
 				}
+				if (document.getElementById("formatType").value=="ogv"){
+					document.getElementById("GIF_output").innerHTML= '<video id="VID_output" width="600" controls style="width:90%;" >\
+					<source src="/THE/" type="video/ogg">\
+					Your browser does not support HTML5 video.\
+					</video>\
+					<a href="/THE/" download="test.ogv"><img src="{% static "download.png" %}" alt="Download"/></a>';
+				}
+				if (document.getElementById("formatType").value=="mp4"){
+					document.getElementById("GIF_output").innerHTML= '<video id="VID_output" width="600" controls style="width:90%;" >\
+					<source src="/THE/" type="video/h264">\
+					Your browser does not support HTML5 video.\
+					</video>\
+					<a href="/THE/" download="test.mp4"><img src="{% static "download.png" %}" alt="Download"/></a>';
+				}
+$("#GIF_output").append('<button type="button" onclick="sendATweet()"><img src="{% static "tweet.png" %}" alt="Tweet"/ height="28"></button>');
+				
 			}
 			
 			// time extent public variable
