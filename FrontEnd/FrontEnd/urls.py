@@ -35,7 +35,6 @@ urlpatterns = [
     url(r'log/$',views.log, name='log'),                                                    # See the logs
     # Get access to the result content
     url(r'THE/$',views.THE,name='THE'),						# Show the GIF
-    url(r'THE_VIDEO/$',views.THE_VIDEO,name='THE_VIDEO/'),			# Show the video
     url(r'GIF/$',views.gif,name='GIF'),						# Show the GIF
     # Retrive information from DB
     url(r'GetCAP',views.getCap,name='GetCAP'),					# Get layers of source
