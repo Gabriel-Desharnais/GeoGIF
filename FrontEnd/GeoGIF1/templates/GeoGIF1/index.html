@@ -460,13 +460,23 @@
 				<!-- Map -->
 				<div id="mapid" style="height: 300px; width: 600px; margin:75px 0px 0px 15px;"></div>
 				
+				<div style="display:inline-block">
+				<!-- Display the coordinates -->
 				<div style="display:inline-block"> North </div> <input type="number" step="any" name="bboxN" id="bboxN" value =90  onchange="updateBoundFromText()" style="display:inline-block"><br>
 				<div style="display:inline-block"> South </div> <input type="number" step="any" name="bboxS" id="bboxS" value =-90 onchange="updateBoundFromText()" style="display:inline-block"><br>
 				<div style="display:inline-block"> East </div> <input type="number" step="any" name="bboxE" id="bboxE" value =180 onchange="updateBoundFromText()" style="display:inline-block"><br>
 				<div style="display:inline-block"> West </div> <input type="number" step="any" name="bboxW" id="bboxW" value =-180 onchange="updateBoundFromText()" style="display:inline-block"><br>
+				</div>
 				
+				<div style="display:inline-block">
+				<!-- Display projection pick -->
+				Pick your projection<br>
+				<input type="text" name="projection" value = "EPSG:4326">
+				</div>
 				
-				<input type="text" name="projection" value = "EPSG:4326">projection<br>
+				<div style="display:inline-block">
+				<!-- Display preselect bound-->
+				Preselected bounding boxes<br>
 				<select name="BBoxPreselect" onchange="ChangeBBox(this);">
 					<option value="-180,-90,180,90">World</option>
 					<option value="-141,42,-52,84">Canada</option>
@@ -484,6 +494,9 @@
 					<option value="-110,49,-101.5,60">Saskatchewan</option>
 					<option value="-141,60,-123.8,69.6">Yukon</option>
 				</select>
+				</div>
+				
+				
 				<br>
 			</div>
   </div>
