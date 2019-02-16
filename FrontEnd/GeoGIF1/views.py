@@ -434,7 +434,7 @@ def gif(request):
     # Launch execute
     update('Begining of download')
     GeoGIF.generateAnimation(params,tempdir.name,update=update)
-    update('Download over, start of video editing')
+    update('Saving result in DB')
     for format in params['list_of_format']:
         update('Saving video format %s in db'%(format,))
         file = open("%s/%s"%(tempdir.name,params["file_name"]+"."+format),"rb")
