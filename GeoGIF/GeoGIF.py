@@ -30,7 +30,7 @@ def parseAndGo(yaml, output_path):
     configuration = yamlInterpreter.parse(yaml)
     generateAnimation(configuration,output_path)
 
-def generateAnimation(configurations, output_path,getCap=None):
+def generateAnimation(configurations, output_path,getCap=None,update=print):
     # start new wms requests and add them to configuration of layers
     # Should not start new connection if layers share the same source
     if getCap is not None:
