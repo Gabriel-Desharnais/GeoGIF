@@ -30,12 +30,13 @@ def parseAndGo(yaml, output_path):
     configuration = yamlInterpreter.parse(yaml)
     generateAnimation(configuration,output_path)
 
-def generateAnimation(configurations, output_path,getCap=None):
+def generateAnimation(configurations, output_path,getCap=None,update=print):
     # start new wms requests and add them to configuration of layers
     # Should not start new connection if layers share the same source
     if getCap is not None:
         pass
     else:
+        update("Getting capabilities of sources, this may be long")
         connectSourcesToWMS(configurations)
     # Generate time string for evry layers
     addTimeToLayerIfNoTime(configurations)
@@ -70,14 +71,15 @@ def generateAnimation(configurations, output_path,getCap=None):
 
     frame=frames(generalParams,sf,configurations['time_layers'],configurations['timeList'])
     # Time layer
-
+    update("begining of download")
     ## Send requests
     sf.download()
     frame.download()
-    
+    update("Download over, merging frame together")
     ## Generate clip of animation
     # Merging every layer for each frame
     frame.merge()
+    update("start of video editing")
     # Create the animation
     clip = generate_animation(frame.result, fps = configurations['frame_rate'])
     ## Export animation

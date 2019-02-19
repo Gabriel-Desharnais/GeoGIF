@@ -372,8 +372,10 @@ def THE(request):
 def gif(request):
     # This will generate the GIF and video files if works and calls the 
     # backend proberly
+    # Create update function
+    update = lambda message : updateStatus(request, message)
     # Send status to client
-    updateStatus(request, 'Configuring parameters')
+    update('Configuring parameters')
     cwd = os.getcwd()   #Useless to delete sometimes
     # Create a tempdir to store intermediate pictures and stuff
     tempdir = tempfile.TemporaryDirectory()
@@ -430,10 +432,11 @@ def gif(request):
     if params['file_name']=="":
         return HttpResponse("erreur")
     # Launch execute
-    updateStatus(request, 'Lauch of the video editor') # Should change that to begining download
-    GeoGIF.generateAnimation(params,tempdir.name)
+    update('Begining of download')
+    GeoGIF.generateAnimation(params,tempdir.name,update=update)
+    update('Saving result in DB')
     for format in params['list_of_format']:
-        updateStatus(request, 'Saving video format %s in db'%(format,))
+        update('Saving video format %s in db'%(format,))
         file = open("%s/%s"%(tempdir.name,params["file_name"]+"."+format),"rb")
         fil = file.read()
         # Save file in user session
@@ -441,7 +444,7 @@ def gif(request):
         request.session["user_format"] = format
         file.close()
     request.session.set_expiry(86400)
-    updateStatus(request, 'Job done')
+    update('Job done')
     return HttpResponse("animation done")
     
 def index(request):
