@@ -888,6 +888,7 @@
 
 		<script>
 			// Ajax part
+			errorReport = "";
 			function getOutput(){
 				// This function request the production of the GIF described in the
 				// form from the GeoGIF1 server
@@ -898,7 +899,8 @@
 						addResultOutput();
 					}else if(this.readyState == 4){
 						//Should be made irelavent at some point with messaging queue
-						document.getElementById("GIF_output").innerHTML="erreur";
+						document.getElementById("GIF_output").innerHTML="<a href='' onclick='javascript:window.open(\"\").document.body.innerHTML = errorReport;return false;'>Click herre to see error repport</a>";
+						errorReport = this.responseText;
 					}
 				};
 				xhttp.open("POST",{% url 'GIF'  %},true);
