@@ -17,7 +17,7 @@ def connectSourcesToWMS(configurations):
     # Then for each of them create a wms connection
     wmsCon = {}
     for url in sources:
-        wmsCon[url] = WebMapService(url, timeout=300)
+        wmsCon[url] = WebMapService(url, timeout=300, version="1.3.0")
     # Add the connection in the configuration dictionnary
     for nu, layer in configurations['base_layers'].items():
         layer['wms'] = wmsCon[layer['url']]
