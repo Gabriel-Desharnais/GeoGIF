@@ -1,7 +1,7 @@
 version: '3'
 services:
   web:
-    build: .
+    build: ./web/
   redis:
     image: "redis:alpine"
   public:
