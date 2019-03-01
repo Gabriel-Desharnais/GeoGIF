@@ -1,0 +1,12 @@
+version: '3'
+services:
+  web:
+    build:
+        context: ./
+        dockerfile: ./web/Dockerfile
+  redis:
+    image: "redis:alpine"
+  public:
+    build: ./balancer/
+    ports:
+      - "80:80"

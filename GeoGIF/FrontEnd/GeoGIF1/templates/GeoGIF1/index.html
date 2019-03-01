@@ -1257,7 +1257,7 @@ $("#GIF_output").append('<button type="button" onclick="sendATweet()"><img src="
 		
 		<script>
 			//This script will crate a webSocket to exchange request status
-			var status_socket = new WebSocket('ws://' + window.location.host + "/status");
+			var status_socket = new WebSocket('ws://' + window.location.host + "/ws/status");
 			//create callback action
 			status_socket.onmessage = function(response){
 				var data = JSON.parse(response.data);

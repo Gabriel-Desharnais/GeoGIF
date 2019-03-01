@@ -8,7 +8,7 @@ from django.template import loader
 import os
 import sys
 sys.path.insert(0,"../GeoGIF/")
-import GeoGIF
+import GeoGIF.GeoGIF as GeoGIF
 import tempfile
 from django.contrib.auth import logout
 import json
@@ -203,7 +203,7 @@ def updateASource(request):
         t=Source.objects.get(source=sourceToUpdate)
         t.lastUpdate = timezone.now()
         t.save()
-        wms = WebMapService(sourceToUpdate, timeout=300)
+        wms = WebMapService(sourceToUpdate, version="1.3.0", timeout=300)
         wmsl = list(wms.contents)
         for la in wmsl:
             try:

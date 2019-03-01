@@ -7,16 +7,16 @@
 # This is the main file of GeoGIF this is the part of the code that
 # glues every module together in order to generate the animation 
 # and publish it in the different formats.
-import yamlInterpreter
+import GeoGIF.yamlInterpreter
 import sys
 from os import path
-from wmsUtil import connectSourcesToWMS
-from wmsUtil import addTimeToLayerIfNoTime
-from timeUtil import configurationToTimeList
-from timeUtil import timeStringToList
-from frameUtil import staticFrame
-from frameUtil import frames
-from videoEditor import generate_animation,\
+from GeoGIF.wmsUtil import connectSourcesToWMS
+from GeoGIF.wmsUtil import addTimeToLayerIfNoTime
+from GeoGIF.timeUtil import configurationToTimeList
+from GeoGIF.timeUtil import timeStringToList
+from GeoGIF.frameUtil import staticFrame
+from GeoGIF.frameUtil import frames
+from GeoGIF.videoEditor import generate_animation,\
 			 generate_gif,\
 			 generate_video
 

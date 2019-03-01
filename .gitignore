@@ -104,6 +104,6 @@ venv.bak/
 .mypy_cache/
 
 #django Shit
-FrontEnd/GeoGIF1/migrations/
-FrontEnd/static/admin/
-FrontEnd/FrontEnd/static/
+GeoGIF/FrontEnd/GeoGIF1/migrations/
+GeoGIF/FrontEnd/static/admin/
+GeoGIF/FrontEnd/FrontEnd/static/

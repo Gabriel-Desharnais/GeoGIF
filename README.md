@@ -10,54 +10,12 @@ Requirements to use GeoGIF:
 
 Clone GeoGIF locally on your filesystem.
 
-```git clone https://github.com/Gabriel-Desharnais/GeoGIF.git```
-
-To install GeoGIF run:
-
+You can start the container with
 ```
-cd GeoGIF
-/bin/bash setup.sh
+docker-compose build
+docker-compose up
 ```
-
-# Running 
-
-## With a front end
-
-To start GeoGIF front-end run:
-
-```
-. GGcontroller/startTestServer.sh HOST:PORT
-```
-
-Access the URL path with a web browser.
-
-1. You must add the WMS server you want to use in the ```sourceDB``` page. 
- * Base map example: http://www.gebco.net/data_and_products/gebco_web_services/web_map_service/mapserv 	
- * Meteorological data example: http://geo.weather.gc.ca/geomet-beta
-2. Update the WMS server so that the Time extent values will be valid
-3. Go to ```GEOGIF1``` page and fill the form
-
-## From the command line
-
-In GeoGIF folder, use command line: 
-```
-GeoGIF/GeoGIF.py <input yaml> <output folder>
-```
-
-Where:
-* ```input yaml```: the desired configuration, see the Configuration section
-* ```output folder```: destination of the output animated GIF
-
-# Configuration
-
-Refer to the [auto-documented sample yaml configuration file](doc/geogif-configuration.yml).
-
-# Test
-
-You can test GeoGIF backend by running it with the sample configuration: 
-```
-python GeoGIF/GeoGIF.py example/geogif-configuration.yml .
-```
+The server is now running on port 80
 
 It should give an image like the one below:
 
@@ -66,7 +24,7 @@ It should give an image like the one below:
 
 # To do
 - [x] Download images from WMS request
-- [x] Generate GIFs 
+- [x] Generate GIFs
 - [x] Generate different video format
 - [x] Output GIFs and videos to a web page
 - [x] Create a online form to request generation of GIFs
