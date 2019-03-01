@@ -3,5 +3,5 @@ from . import consumers
 
 
 websocket_urlpatterns = [
-	url('status',consumers.randConsumer),
+	url('ws/status',consumers.randConsumer),
 ]
