@@ -20,6 +20,11 @@ RUN chown www-data /usr/imageio/
 RUN chown -R www-data /var/www/GeoGIF/FrontEnd/
 RUN echo "export IMAGEIO_USERDIR=/usr/imageio/" >> /etc/apache2/envvars
 
+# Create DB and migrate models and static stuf
+RUN cd /var/www/GeoGIF/FrontEnd/ ; python3 manage.py makemigrations
+RUN cd /var/www/GeoGIF/FrontEnd/ ; python3 manage.py migrate
+RUN cd /var/www/GeoGIF/FrontEnd/ ; python3 manage.py collectstatic
+
 
 copy ./apache2.conf /etc/apache2/apache2.conf
 
