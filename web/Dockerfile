@@ -8,7 +8,7 @@ RUN apt-get install -yqq apache2 apache2-utils libapache2-mod-wsgi-py3 python3 p
 
 
 # Import requirements
-copy ../GeoGIF/ /var/www/GeoGIF
+copy ./GeoGIF/ /var/www/GeoGIF
 
 
 RUN pip3 install -U pip
@@ -26,7 +26,7 @@ RUN cd /var/www/GeoGIF/FrontEnd/ ; python3 manage.py migrate
 RUN cd /var/www/GeoGIF/FrontEnd/ ; python3 manage.py collectstatic
 
 
-copy ./apache2.conf /etc/apache2/apache2.conf
+copy ./web/apache2.conf /etc/apache2/apache2.conf
 
 # Get ip
 # Start apache

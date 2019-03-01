@@ -1,7 +1,9 @@
 version: '3'
 services:
   web:
-    build: ./web/
+    build:
+        context: ./
+        dockerfile: ./web/Dockerfile
   redis:
     image: "redis:alpine"
   public:
