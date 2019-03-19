@@ -7,6 +7,6 @@ services:
   redis:
     image: "redis:alpine"
   public:
-    build: ./balancer/
+    build: ./geogifBalancer/
     ports:
       - "80:80"
