@@ -1,0 +1,10 @@
+version: 1
+task_definition:
+    services:
+        web:
+            mem_limit: 250m
+        redis:
+            mem_limit: 250m
+        public:
+            mem_limit: 250m
+        

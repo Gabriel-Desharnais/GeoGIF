@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  web:
+    image: "gabrieldesharnais/geogif:0_0_1"
+    links: 
+        - redis
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: geogif
+        awslogs-region: us-east-1
+        awslogs-stream-prefix: geogif-web
+  redis:
+    image: "redis:alpine"
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: geogif
+        awslogs-region: us-east-1
+        awslogs-stream-prefix: redis
+  public:
+    image: "gabrieldesharnais/geogifbalancer:0_0_1"
+    links: 
+        - web
+    logging:
+      driver: awslogs
+      options: 
+        awslogs-group: geogif
+        awslogs-region: us-east-1
+        awslogs-stream-prefix: geogifBalancer
+    ports:
+      - "80:80"
