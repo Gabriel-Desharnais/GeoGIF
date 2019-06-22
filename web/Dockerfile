@@ -12,6 +12,7 @@ copy ./GeoGIF/ /var/www/GeoGIF
 
 
 RUN pip3 install -U pip
+RUN pip3 install requests
 RUN pip3 install -r /var/www/GeoGIF/requirements.txt
 
 # set imageio folder

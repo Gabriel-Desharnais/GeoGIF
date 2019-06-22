@@ -26,6 +26,7 @@ from urllib.parse import urlencode,parse_qsl
 from TwitterAPI import TwitterAPI
 from asgiref.sync import async_to_sync
 import channels.layers
+import mapycli
 
 # Twitter API access informations
 CONSUMER_KEY = "IkxwKv3IJGoOTt8vHku7gIjDJ"
@@ -197,27 +198,32 @@ def updateASource(request):
     if sourceToUpdate == "":
         return HttpResponseNotFound('')
     else:
-        from owslib.wms import WebMapService
         # Delete old files
         GetCapapilities.objects.filter(source=sourceToUpdate).delete()
         t=Source.objects.get(source=sourceToUpdate)
         t.lastUpdate = timezone.now()
         t.save()
-        wms = WebMapService(sourceToUpdate, version="1.3.0", timeout=300)
-        wmsl = list(wms.contents)
+        wmsSession = mapycli.wms.session()
+        wmsSession.autoDecode = "utf-8"
+        getCapFromSource = wmsSession.add(sourceToUpdate)
+        wmsl = list(getCapFromSource.listNamedLayers())
         for la in wmsl:
-            try:
-                if wms.contents[la].timepositions is not None:
-                    timeE = True
-                    timeEx = wms.contents[la].timepositions[0]
-                else:
-                    timeE = False
-                    timeEx = ""
-            except:
+            # Look for time time dimension
+            timeDim = [a for a in getCapFromSource.getLayerByName(la).struct().dimension if a.name == "time"]
+            # Check if there is a time dim
+            if timeDim == []:
+                # if there is no time dim
                 timeE = False
+                timeEx = ""
+            else:
+                # if there is a time dim
+                timeE = True
+                timeEx = timeDim[0].extent
+            
             s = GetCapapilities(source = sourceToUpdate, prodName = la, timeEnabled = timeE, timeExtent=timeEx, lastUpdate = timezone.now())
             s.save()
         return HttpResponse("done")
+
 def AddSource(request):
     # This add a source to the source DB
     
@@ -238,23 +244,29 @@ def updateALayer(request):
     if (sourceToUpdate == "") or (layerToUpdate == ""):
         return HttpResponseNotFound('')
     else:
-        from owslib.wms import WebMapService
         # Delete old files
-        GetCapapilities.objects.filter(source=sourceToUpdate,prodName=layerToUpdate).delete()
-        wms = WebMapService(sourceToUpdate, timeout=300)
-        wmsl = list(wms.contents)
-        try:
-            if wms.contents[layerToUpdate].timepositions is not None:
-                timeE = True
-                timeEx = wms.contents[layerToUpdate].timepositions[0]
-            else:
-                timeE = False
-                timeEx = ""
-        except:
+        GetCapapilities.objects.filter(source=sourceToUpdate, prodName=layerToUpdate).delete()
+        
+        wmsSession = mapycli.wms.session()
+        wmsSession.autoDecode = "utf-8"
+        getCapFromSource = wmsSession.add(sourceToUpdate, layers=layerToUpdate)
+        # Look for time time dimension
+        timeDim = [a for a in getCapFromSource.getLayerByName(layerToUpdate).struct().dimension if a.name == "time"]
+        # Check if there is a time dim
+        if timeDim == []:
+            # if there is no time dim
             timeE = False
+            timeEx = ""
+        else:
+            # if there is a time dim
+            timeE = True
+            timeEx = timeDim[0].extent
+        
         s = GetCapapilities(source = sourceToUpdate, prodName = layerToUpdate, timeEnabled = timeE, timeExtent=timeEx, lastUpdate = timezone.now())
         s.save()
+            
         return HttpResponse("done")
+    
 def foo(request):
     # This should not exist please delete it sometime soon 
     
@@ -265,30 +277,7 @@ def foo(request):
     for sou in GetCapapilities.objects.all():
         text += sou.source +"\t"+ sou.prodName+"\t" +str(sou.timeEnabled) +"\r\n"
     return HttpResponse(text)
-def updateCap(request):
-    # This update the DB not sure why. it should be deleted (or not)
-    
-    GetCapapilities.objects.all().delete()
-    from owslib.wms import WebMapService
-    url = request.GET.get("source","http://geo.weather.gc.ca/geomet-beta")
-    wms = WebMapService(url, timeout=300)
-    wmsl = list(wms.contents)
-    for la in wmsl:
-        try:
-            if wms.contents[la].timepositions is not None:
-                timeE = True
-                timeEx = wms.contents[la].timepositions[0]
-            else:
-                timeE = False
-                timeEx = ""
-        except:
-            timeE = False
-        s = GetCapapilities(source = url, prodName = la, timeEnabled = timeE, timeExtent=timeEx)
-        s.save()
-    text = ""
-    for sou in GetCapapilities.objects.all():
-        text += sou.source +"\t"+ sou.prodName+"\t" +str(sou.timeEnabled) +"\t" + sou.timeExtent +"\r\n"
-    return HttpResponse(text)
+
     
 def getCap(request):
     # This list all layer from a source
@@ -372,6 +361,9 @@ def THE(request):
 def gif(request):
     # This will generate the GIF and video files if works and calls the 
     # backend proberly
+    #Start timer
+    import time
+    t1 = time.time()
     # Create update function
     update = lambda message : updateStatus(request, message)
     # Send status to client
@@ -444,7 +436,7 @@ def gif(request):
         request.session["user_format"] = format
         file.close()
     request.session.set_expiry(86400)
-    update('Job done')
+    update('Job done in %f'%(time.time()-t1))
     return HttpResponse("animation done")
     
 def index(request):
