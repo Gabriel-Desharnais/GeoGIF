@@ -1,0 +1,12 @@
+version: '3'
+services:
+  redis:
+    image: "redis:alpine"
+  public:
+    build:
+      context: ./
+      dockerfile:  ./geogifDockerDev/Dockerfile
+    ports:
+      - "80:8000"
+    volumes:
+      - "/Users/gabriel/programmation/GeoGIF/GeoGIF:/var/www/GeoGIF"
