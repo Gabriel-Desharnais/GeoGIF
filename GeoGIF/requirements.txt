@@ -11,7 +11,7 @@ chardet==3.0.4
 constantly==15.1.0
 daphne==2.2.5
 decorator==4.3.2
-Django==2.1.7
+Django==2.2.24
 hiredis==1.0.0
 httplib2==0.12.0
 hyperlink==18.0.0
