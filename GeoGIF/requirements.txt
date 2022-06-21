@@ -22,7 +22,7 @@ incremental==17.5.0
 isodate==0.6.0
 moviepy==0.2.3.5
 msgpack==0.6.1
-numpy==1.16.1
+numpy==1.22.0
 oauth2==1.9.0.post1
 oauthlib==3.0.1
 OWSLib==0.17.1
